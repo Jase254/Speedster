@@ -1,0 +1,43 @@
+{
+  "name": "radial-progress-chart",
+  "main": "dist/radial-progress-chart.js",
+  "version": "0.0.4",
+  "homepage": "https://github.com/pablomolnar/radial-progress-chart",
+  "authors": [
+    "Pablo Molnar <pablomolnar@gmail.com>"
+  ],
+  "description": "Radial Progress Chart started as a weekend project. It's written on the top of D3.js and was heavily inspired by and D3 stub of Polar Clock",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "apple",
+    "watch",
+    "radial",
+    "bar",
+    "progress",
+    "chart",
+    "polar",
+    "d3"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.0.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.4",
+    "commit": "7d8fde2548b349579f61e047ddafd27809f41dbf"
+  },
+  "_source": "https://github.com/pablomolnar/radial-progress-chart.git",
+  "_target": "^0.0.4",
+  "_originalSource": "radial-progress-chart",
+  "_direct": true
+}
