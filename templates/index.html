@@ -24,115 +24,11 @@
     <script src="{{ url_for('bower.static', filename='jquery/dist/jquery.js') }}"></script>
 
 
-    <style>
-        body{
-            background-color: rgb(118, 118, 118);
-        }
-        .container {
-            text-align: center;
-        }
-
-        .radial-container div {
-            display: inline-block;
-            padding: 20px;
-            width: 250px;
-        }
-
-        .rbc-label-start {
-            font-family: fontawesome;
-            font-weight: bold;
-            font-size: 30px;
-        }
-
-        .rbc-center-text {
-            font-family: 'Roboto', 'Myriad Set Pro', 'Lucida Grande', 'Helvetica Neue', Helvetica, Arial;
-            fill: white;
-            font-size: 45px;
-        }
-
-        ody {
-      background: black;
-      font-family: 'Helvetica Neue', Helvetica, Arial, Verdana, sans-serif;
-    }
-
-    ul {
-      margin: 0;
-      padding: 0;
-    }
-
-    li {
-      display: inline-block;
-      margin: 2px 10px;
-    }
-
-    hr {
-      border-color: #565656;
-    }
-
-    svg {
-      display: block;
-      margin: 0 auto;
-    }
-
-    .calendar-container {
-      margin: 0 auto;
-      padding: 5px;
-    }
-
-    .main  svg {
-      width: 50vw;
-      max-width: 500px;
-    }
-
-    .week {
-      text-align: center;
-    }
-
-    ul.week li svg {
-      width: 8vw;
-      max-width: 80px;
-    }
-
-    .date {
-      color: white;
-      font-size: 25px;
-      font-weight: 100;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .circle {
-      margin: 3px auto;
-      border-radius: 50%;
-      width: 27px;
-      height: 27px;
-      line-height: 27px;
-      text-align: center;
-      color: #565656;
-      font-size: 14px;
-      font-weight: 300;
-    }
-
-    li:hover .circle {
-      color: white;
-      background-color: #565656;
-
-    }
-
-    .active {
-      color: white;
-      background-color: #fa1654 !important;
-    }
-
-    .rbc-label-start {
-      font-family: fontawesome;
-      font-weight: bold;
-      font-size: 30px;
-    }
-    </style>
+    <link rel="stylesheet" type="text/css" href="../static/Styles.css">
 
     {{ moment.include_jquery() }}
     {{ moment.include_moment() }}
+{#    {{ campus.js }}#}
 
 
 
@@ -155,86 +51,170 @@
 </nav>
 <div class="container" style="margin-top:10px; background-color: rgb(118, 118, 118);">
     <div class="row">
-        <div class="col-sm-8">
-            {{googlemap("simple-map", 37.4419, -122.1419)}}
+        <div class="col-sm-8" style="padding-top:70px">
+{#            {{ campus.html }}#}
+            {{googlemap("simple-map", 33.6461,
+             -117.8427,
+              style="height:500px;width:500;margin:0;border-radius:25px;",
+               zoom=17,
+                    markers=[
+                    {
+                    'icon': "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                    'lat': lat,
+                    'lng': long ,
+                    'infobox': (
+                    "<style='color: rgb(118, 118, 118)></style>"
+                    "<img src='../static/marker.png' style='width:70px;' />"
+                    "<br>"
+                    "<b style='color:rgb(128, 255, 245);'>Board Lock </b>")
+
+            }]
+            )}}
         </div>
-        <div class="col-sm-4">
-            <div class="radial-container">
-                <div class="progress" style="background-color: rgb(118, 118, 118); height: 210px; width: 210px; "></div>
+        <div class="col-sm-4" style="padding-left: 60px;padding-right: 0;">
+            <div class="cal-container">
+                <div class="calories" style="background-color: rgb(118, 118, 118); height: 210px; width: 210px; "></div>
+                <script type="text/javascript">progress.update({{ calories }})</script>
             </div>
             <div class="radial-container">
-                <div class="progress" style="background-color: rgb(118, 118, 118); height: 210px; width: 210px; "></div>
+                <div class="speed" style="background-color: rgb(118, 118, 118); height: 210px; width: 210px; "></div>
+                <script type="text/javascript">speed.update({{ speed }})</script>
             </div>
             <div class="radial-container">
-                <div class="progress" style="background-color: rgb(118, 118, 118); height: 210px; width: 210px; "></div>
+                <div class="distance" style="background-color: rgb(118, 118, 118); height: 210px; width: 210px; "></div>
+                <script type="text/javascript">speed.update({{ 40 }})</script>
             </div>
         </div>
     </div>
 </div>
 <div class="container" style="margin-top:10px; background-color: rgb(118, 118, 118);">
     <div class="calendar-container">
-  <ul class="week"></ul>
-  <hr>
-  <div class="date"></div>
-  <div class="main"></div>
-</div>
+        <ul class="week"></ul>
+        <hr>
+        <div class="date"></div>
+        <div class="main"></div>
+    </div>
 </div>
 
 </body>
 <script src="{{ url_for('bower.static', filename='radial-progress-chart/dist/radial-progress-chart.js') }}"></script>
+{#<script type="text/javascript">#}
+{#var progress = new RadialProgressChart('.progress', {#}
+{#    diameter: 200,#}
+{#    series: [{#}
+{#        labelStart: '\uF105',#}
+{#        value: 0,#}
+{#        color: {#}
+{#            linearGradient: {#}
+{#                x1: '0%',#}
+{#                y1: '100%',#}
+{#                x2: '50%',#}
+{#                y2: '0%',#}
+{#                spreadMethod: 'pad'#}
+{#            },#}
+{#            stops: [{#}
+{#                offset: '0%',#}
+{#                'stop-color': '#ffff00',#}
+{#                'stop-opacity': 1#}
+{#            }, {#}
+{#                offset: '100%',#}
+{#                'stop-color': '#ff0000',#}
+{#                'stop-opacity': 1#}
+{#            }]#}
+{#        }#}
+{#    }],#}
+{#    center: function(p) {#}
+{#        return p + ' %'#}
+{#    }#}
+{#});#}
+{##}
+{#function getRandom(min, max) {#}
+{#    return Math.random() * (max - min) + min;#}
+{#}#}
+{##}
+{#function loop(p) {#}
+{#    if (p > 100) {#}
+{#        setTimeout(function() {#}
+{#            loop(0)#}
+{#        }, 3000)#}
+{#    } else {#}
+{#        progress.update(p);#}
+{#        setTimeout(function() {#}
+{#            loop(p + 1)#}
+{#        }, 90)#}
+{#    }#}
+{#}#}
+{##}
+{#loop(10);#}
+{#</script>#}
 
 <script type="text/javascript">
-        var progress = new RadialProgressChart('.progress', {
-            diameter: 200,
-            series: [{
-                labelStart: '\uF105',
-                value: 0,
-                color: {
-                    linearGradient: {
-                        x1: '0%',
-                        y1: '100%',
-                        x2: '50%',
-                        y2: '0%',
-                        spreadMethod: 'pad'
-                    },
-                    stops: [{
-                        offset: '0%',
-                        'stop-color': '#ffff00',
-                        'stop-opacity': 1
-                    }, {
-                        offset: '100%',
-                        'stop-color': '#ff0000',
-                        'stop-opacity': 1
-                    }]
-                }
-            }],
-            center: function(p) {
-                return p + ' %'
-            }
-        });
-
-        function getRandom(min, max) {
-            return Math.random() * (max - min) + min;
+var calories = new RadialProgressChart('.calories', {
+    diameter: 200,
+    max: 800,
+    round: true,
+    series: [{
+        labelStart: '\uF105',
+        value: {{ calories }},
+        color: {
+            linearGradient: {
+                x1: '0%',
+                y1: '100%',
+                x2: '50%',
+                y2: '0%',
+                spreadMethod: 'pad'
+            },
+            stops: [{
+                offset: '0%',
+                'stop-color': '#fe08b5',
+                'stop-opacity': 1
+            }, {
+                offset: '100%',
+                'stop-color': '#ff1410',
+                'stop-opacity': 1
+            }]
         }
+    }],
+    center: {
+        content: [function(value) {
+            return value
+        }, ' OF 800 CALS'],
+        y: 25
+    }
+});
 
-        function loop(p) {
-            if (p > 100) {
-                setTimeout(function() {
-                    loop(0)
-                }, 3000)
-            } else {
-                progress.update(p);
-                setTimeout(function() {
-                    loop(p + 1)
-                }, 90)
-            }
-        }
-
-        loop(10);
-    </script>
+var speed = new RadialProgressChart('.speed', {
+    diameter: 200,
+    max: 25,
+    round: false,
+    series: [{
+        value: {{ speed }},
+        color: ['red', '#7CFC00']
+    }],
+    center: function(d) {
+        return d.toFixed(1) + ' MPH'
+    }
+});
+</script>
 
 <script type="text/javascript">
-    var data = [
+var distance = new RadialProgressChart('.distance', {
+    diameter: 200,
+    max: 20,
+    round: false,
+    series: [{
+        value: {{ distance }},
+        color: ['red', '#7CFC00']
+    }],
+    center: function(d) {
+        return d.toFixed(1) + ' Miles'
+    }
+});
+
+</script>
+
+<script type="text/javascript">
+var data = [
     {day: 'M'},
     {day: 'T'},
     {day: 'W'},
@@ -242,55 +222,55 @@
     {day: 'F'},
     {day: 'S'},
     {day: 'S'}
-  ];
-  var dateFormatter = d3.time.format("%A, %B %d, %Y");
-  var mainChart = new RadialProgressChart('.main', {
-        diameter: 130,
-        series: [
-          {labelStart: '\uF106', value: 50},
-          {labelStart: '\uF101', value: 50},
-          {labelStart: '\uF105', value: 50}
-        ]}
-  );
+];
+var dateFormatter = d3.time.format("%A, %B %d, %Y");
+var mainChart = new RadialProgressChart('.main', {
+    diameter: 130,
+    series: [
+        {labelStart: '\uF106', value: 50},
+        {labelStart: '\uF101', value: 50},
+        {labelStart: '\uF105', value: 50}
+    ]}
+);
 
-  d3.select('.week').selectAll('li')
-      .data(data).enter()
-      .append('li').on('click', function (d) {
-        // Update active class, date and main chart
-        d3.selectAll('.circle').classed('active', false);
-        d3.select(this).select('.circle').classed('active', true);
-        d3.select('.date').text(d.date);
-        mainChart.update(d.series);
-      })
-      .append('div').attr('class', 'circle').text(function (d) {
-        return d.day;
-      })
-      .each(function (d, i) {
+d3.select('.week').selectAll('li')
+    .data(data).enter()
+    .append('li').on('click', function (d) {
+    // Update active class, date and main chart
+    d3.selectAll('.circle').classed('active', false);
+    d3.select(this).select('.circle').classed('active', true);
+    d3.select('.date').text(d.date);
+    mainChart.update(d.series);
+})
+    .append('div').attr('class', 'circle').text(function (d) {
+    return d.day;
+})
+    .each(function (d, i) {
         d.date = dateFormatter(getDate(i));
         d.series = [getRandom(), getRandom(), getRandom()];
         new RadialProgressChart(this.parentNode, {
-          diameter: 10,
-          stroke: {
-            width: 6,
-            gap: 1
-          },
-          series: d.series
+            diameter: 10,
+            stroke: {
+                width: 6,
+                gap: 1
+            },
+            series: d.series
         });
-      });
+    });
 
-  // Return some chronological dates
-  function getDate(i) {
-    var date = new Date('2015-06-16');
+// Return some chronological dates
+function getDate(i) {
+    var date = new Date('2018-11-27');
     date.setDate(date.getDate() + i);
     return date;
-  }
+}
 
-  // Random int between 20-80
-  function getRandom() {
+// Random int between 20-80
+function getRandom() {
     return Math.round(Math.random() * 60) + 20;
-  }
+}
 
-  // Select monday by default
-  document.querySelector('li').click();
+// Select monday by default
+document.querySelector('li').click();
 </script>
 </html>
