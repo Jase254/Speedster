@@ -49,6 +49,7 @@
 <div class="container" style="margin-top:10px; background-color: rgb(118, 118, 118);">
     <div class="row">
         <div class="col-sm-8" style="padding-top:70px">
+            {% if today %}
             {{googlemap("simple-map", 33.6461,
              -117.8427,
               style="height:500px;width:500;margin:0;border-radius:25px;",
@@ -74,6 +75,23 @@
                     fit_markers_to_bounds=True,
                     zoom=13
             )}}
+            {% else %}
+            {{googlemap("simple-map", 33.6461,
+             -117.8427,
+              style="height:500px;width:500;margin:0;border-radius:25px;",
+                    markers=[
+                    {
+                    'icon': "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                    'lat': 33.6461,
+                    'lng': -117.8427 ,
+                    'infobox': (
+                    "<style='color: rgb(118, 118, 118)></style>"
+                    "<img src='../static/UCI.gif' style='width:70px;' />"
+                    )}
+                    ],
+                    zoom=13
+            )}}
+            {% endif %}
         </div>
         <div class="col-sm-4" style="padding-left: 60px;padding-right: 0;">
             <div class="cal-container">
@@ -106,7 +124,7 @@
 <script type="text/javascript">
 var calories = new RadialProgressChart('.calories', {
     diameter: 200,
-    max: 1000,
+    max: 500,
     round: true,
     series: [{
         labelStart: '\uF105',
@@ -121,11 +139,13 @@ var calories = new RadialProgressChart('.calories', {
             },
             stops: [{
                 offset: '0%',
-                'stop-color': '#fe08b5',
+                {#'stop-color': '#fe08b5',#}
+                'stop-color': '#e90b3a',
                 'stop-opacity': 1
             }, {
                 offset: '100%',
-                'stop-color': '#ff1410',
+                {#'stop-color': '#ff1410',#}
+                'stop-color': '#e90b3a',
                 'stop-opacity': 1
             }]
         }
@@ -133,18 +153,18 @@ var calories = new RadialProgressChart('.calories', {
     center: {
         content: [function(value) {
             return value
-        }, ' OF 1000 CALS'],
+        }, ' OF 500 CALS'],
         y: 25
     }
 });
 
 var speed = new RadialProgressChart('.speed', {
     diameter: 200,
-    max: 25,
+    max: 15,
     round: false,
     series: [{
         value: {{ speed }},
-        color: ['red', '#7CFC00']
+        color: ['#a0ff03', '#a0ff03']
     }],
     center: function(d) {
         return d.toFixed(1) + ' MPH'
@@ -155,11 +175,11 @@ var speed = new RadialProgressChart('.speed', {
 <script type="text/javascript">
 var distance = new RadialProgressChart('.distance', {
     diameter: 200,
-    max: 20,
+    max: 10,
     round: false,
     series: [{
         value: {{ total_distance }},
-        color: ['red', '#7CFC00']
+        color: ['#1ad5de', '#1ad5de']
     }],
     center: function(d) {
         return d.toFixed(1) + ' Miles'

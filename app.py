@@ -81,7 +81,7 @@ def get_iot_message(offset):
             offset = event_data.offset.value
             sn = event_data.sequence_number
             message = event_data.body_as_json()
-            message["time"] = datetime.datetime.utcnow()
+            message["time"] = event_data.enqueued_time
             message['offset'] = offset
             message['sequence'] = sn
             message['fixed'] = bool(message["fix"])
@@ -98,11 +98,17 @@ def get_iot_message(offset):
     return messages
 
 
-def latest_record():
+def latest_record(years, month, day):
     global last_valid_sequence
     global DB
     message = DB.Speedster_Data.find_one({"sequence": last_valid_sequence})
-    return message
+    beginning = datetime.datetime(years, month, day) + datetime.timedelta(hours=8)
+    end = beginning + datetime.timedelta(days=1)
+
+    if message["time"] > beginning and message["time"] < end:
+        return message
+    else:
+        return None
 
 
 def random_distance():
@@ -112,7 +118,9 @@ def random_distance():
 def get_distance_travelled(year, month, day):
     global DB
     distance_total = 0
-    entries = DB.Speedster_Data.find({"time": {"$gte": datetime.datetime(year, month, day), "$lte": (datetime.datetime(year, month, day) + datetime.timedelta(days=1))}})
+    beginning = datetime.datetime(year,month, day) + datetime.timedelta(hours=8)
+    end = beginning + datetime.timedelta(days=1)
+    entries = DB.Speedster_Data.find({"time": {"$gte": beginning, "$lte": end}})
     if entries.count() > 2:
         start = (entries[0]["latitude"], entries[0]["longitude"])
         for entry in entries[1:]:
@@ -127,16 +135,26 @@ def hello_world():
     connect_mongo()
     messages = get_iot_message('-1')
     mongo_insert(messages)
-    current = latest_record()
-    date = datetime.datetime.utcnow()
-    total_distance = get_distance_travelled(date.year, date.month, date.day)
-    lat = current['latitude']
-    long = current['longitude']
-    calories = current['calories']
-    altitude = current['altitude']
-    velocity = current['velocity'] * 2.23694
+    date = datetime.datetime.now()
+    current = latest_record(date.year, date.month, date.day)
+    if current is not None:
+        total_distance = get_distance_travelled(date.year, date.month, date.day)
+        lat = current['latitude']
+        long = current['longitude']
+        calories = current['calories']
+        altitude = current['altitude']
+        velocity = current['velocity'] * 2.23694
+        today = True
+    else:
+        total_distance = 0
+        lat = 0
+        long = 0
+        calories = 0
+        altitude = 0
+        velocity = 0
+        today = False
 
-    return render_template('index.html', total_distance=total_distance, distance=4, speed=velocity, calories=calories, lat=lat, long=long)
+    return render_template('index.html', today=today, total_distance=total_distance, distance=4, speed=velocity, calories=calories, lat=lat, long=long)
 
 
 @app.route('/updatedb')
