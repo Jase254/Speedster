@@ -11,6 +11,10 @@ from azure.eventhub import EventHubClient, Receiver, Offset
 import json
 import datetime
 from flask import jsonify
+import random
+from multiprocessing import Process
+import time
+from geopy import distance
 
 app = Flask(__name__)
 
@@ -25,6 +29,7 @@ moment = Moment(app)
 Bower(app)
 
 DB = None
+lastSequence = None
 
 
 def connect_mongo():
@@ -37,25 +42,35 @@ def connect_mongo():
 
 def mongo_insert(data):
     global DB
-    DB.Speedster_Data.insert_one(data)
+    for entries in data:
+        DB.Speedster_Data.update(
+            entries,
+            {"$set": entries},
+            upsert=True)
 
 
 # Use "@latest" for most current
 # Use "-1" for all
 def get_iot_message(offset):
+    global lastSequence
+
     CONSUMER_GROUP = "$default"
-    OFFSET = Offset(offset)
+
+    if lastSequence is None:
+        OFFSET = Offset(offset)
+    else:
+        OFFSET = Offset(lastSequence)
     PARTITION = "0"
     messages = []
 
-    connection_str = "Endpoint=sb://speedster.servicebus.windows.net/;SharedAccessKeyName=iothubroutes_SpeedsterHub;SharedAccessKey=RbF5Vf4Rm4DumTY0LAHwdYfaZPafAwo/yVWFdECH08k=;EntityPath=telemetry"
+    connection_str = "Endpoint=sb://speedster.servicebus.windows.net/;SharedAccessKeyName=iothubroutes_SpeedsterHub;SharedAccessKey=nEErnnHfOnkGdyrKq7VUg91IWNNNyUt3JUE1t2ygqU8=;EntityPath=clean"
 
     total = 0
     client = EventHubClient.from_connection_string(connection_str, debug=False)
     try:
         receiver = client.add_receiver(CONSUMER_GROUP, PARTITION, prefetch=300, offset=OFFSET)
         client.run()
-        batched_events = receiver.receive(max_batch_size=None)
+        batched_events = receiver.receive(max_batch_size=300, timeout=15)
         for event_data in batched_events:
             total += 1
             offset = event_data.offset.value
@@ -64,8 +79,10 @@ def get_iot_message(offset):
             message["time"] = datetime.datetime.utcnow()
             message['offset'] = offset
             message['sequence'] = sn
-            messages.append(message)
-            print(message)
+            message['fixed'] = bool(message["fix"])
+            if message["fixed"]:
+                lastSequence = sn
+                messages.append(message)
 
     except KeyboardInterrupt:
         pass
@@ -75,32 +92,54 @@ def get_iot_message(offset):
     return messages
 
 
+def latest_record():
+    global lastSequence
+    global DB
+    message = DB.Speedster_Data.find_one({"sequence": lastSequence})
+    return message
+
+
+def random_distance():
+    return random.randint(0, 6)
+
+
+def get_distance_travelled(year, month, day):
+    global DB
+    distance_total = 0
+    entries = DB.Speedster_Data.find({"time": {"$gte": datetime.datetime(year, month, day), "$lte": (datetime.datetime(year, month, day) + datetime.timedelta(days=1))}})
+    if entries.count() > 2:
+        start = (entries[0]["latitude"], entries[0]["longitude"])
+        for entry in entries[1:]:
+            end = (entry["latitude"], entry["longitude"])
+            distance_total += distance.great_circle(start, end).miles
+            start = end
+
+    return distance_total
+
 @app.route('/')
 def hello_world():
     connect_mongo()
     messages = get_iot_message('-1')
-    print(messages[0])
-    current = messages[0]
-    mongo_insert(messages[0])
+    mongo_insert(messages)
+    current = latest_record()
+    date = datetime.datetime.utcnow()
+    total_distance = get_distance_travelled(date.year, date.month, date.day)
     lat = current['latitude']
     long = current['longitude']
     calories = current['calories']
     altitude = current['altitude']
-    velocity = current['velocity']
-    date = datetime.date.today()
-    print(date.isoformat())
+    velocity = current['velocity'] * 2.23694
 
-    return render_template('index.html', date=date.isoformat(), distance=4, speed=15, calories=3, lat=33.6461, long=-117.8427)
+    return render_template('index.html', total_distance=total_distance, distance=4, speed=velocity, calories=calories, lat=lat, long=long)
 
 
 @app.route('/updatedb')
 def update_db():
     connect_mongo()
     messages = get_iot_message('-1')
-    print(messages[0])
-    mongo_insert(messages[0])
+    mongo_insert(messages)
 
-    return
+    return "{} Records Added to the DB".format(len(messages))
 
 
 if __name__ == '__main__':
