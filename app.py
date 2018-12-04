@@ -30,6 +30,7 @@ Bower(app)
 
 DB = None
 lastSequence = None
+last_valid_sequence = None
 
 
 def connect_mongo():
@@ -53,8 +54,12 @@ def mongo_insert(data):
 # Use "-1" for all
 def get_iot_message(offset):
     global lastSequence
+    global last_valid_sequence
 
     CONSUMER_GROUP = "$default"
+    print(lastSequence)
+    print(last_valid_sequence)
+    print(offset)
 
     if lastSequence is None:
         OFFSET = Offset(offset)
@@ -80,8 +85,9 @@ def get_iot_message(offset):
             message['offset'] = offset
             message['sequence'] = sn
             message['fixed'] = bool(message["fix"])
+            lastSequence = sn
             if message["fixed"]:
-                lastSequence = sn
+                last_valid_sequence = sn
                 messages.append(message)
 
     except KeyboardInterrupt:
@@ -93,9 +99,9 @@ def get_iot_message(offset):
 
 
 def latest_record():
-    global lastSequence
+    global last_valid_sequence
     global DB
-    message = DB.Speedster_Data.find_one({"sequence": lastSequence})
+    message = DB.Speedster_Data.find_one({"sequence": last_valid_sequence})
     return message
 
 
