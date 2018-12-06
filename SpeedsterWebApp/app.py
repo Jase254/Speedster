@@ -19,9 +19,9 @@ from geopy import distance
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "mysecrebotkey"
-app.config['GOOGLEMAPS_KEY'] = 'AIzaSyBAecs30c9qmrQaHzG8rskQdyJvmDYJh4s'
+app.config['GOOGLEMAPS_KEY'] = 'add google maps API Key'
 
-uri = "mongodb://speedstermongo:hihfszN56ne6U4ht4ocN0PKfiDNsOBYNBqbwW5yvVdy2psXmjrwyG7WtSVOTfVzyn18sCI32Na3oF2RCgbK2AA==@speedstermongo.documents.azure.com:10255/?ssl=true&replicaSet=globaldb"
+uri = "Add MongoDB connection string "
 client = MongoClient(uri, ssl=True, ssl_cert_reqs=ssl.CERT_NONE)
 
 GoogleMaps(app)
@@ -35,7 +35,7 @@ last_valid_sequence = None
 
 def connect_mongo():
     global DB
-    uri = "mongodb://speedstermongo:hihfszN56ne6U4ht4ocN0PKfiDNsOBYNBqbwW5yvVdy2psXmjrwyG7WtSVOTfVzyn18sCI32Na3oF2RCgbK2AA==@speedstermongo.documents.azure.com:10255/?ssl=true&replicaSet=globaldb"
+    uri = "Add mongoDB connection string"
     client = MongoClient(uri, ssl=True, ssl_cert_reqs=ssl.CERT_NONE)
     DB = client["Speedster_DB"]
     print("DB Connected")
@@ -68,7 +68,7 @@ def get_iot_message(offset):
     PARTITION = "0"
     messages = []
 
-    connection_str = "Endpoint=sb://speedster.servicebus.windows.net/;SharedAccessKeyName=iothubroutes_SpeedsterHub;SharedAccessKey=nEErnnHfOnkGdyrKq7VUg91IWNNNyUt3JUE1t2ygqU8=;EntityPath=clean"
+    connection_str = "Add EventHub connection string"
 
     total = 0
     client = EventHubClient.from_connection_string(connection_str, debug=False)
