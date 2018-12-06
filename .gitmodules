@@ -1,0 +1,3 @@
+[submodule "SpeedsterIotDevice"]
+	path = SpeedsterIotDevice
+	url = https://github.com/jaort417/SpeedsterIotDevice.git
